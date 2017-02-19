@@ -1,5 +1,5 @@
 {
-  "name": "bashkarev/eml",
+  "name": "bashkarev/email",
   "description": "mime mail parser, email viewer",
   "license": "MIT",
   "authors": [
