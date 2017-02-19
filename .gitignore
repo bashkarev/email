@@ -1,0 +1,9 @@
+.idea
+nbproject
+/composer.lock
+/vendor
+/example
+/bin
+composer.phar
+.DS_Store
+Thumbs.db

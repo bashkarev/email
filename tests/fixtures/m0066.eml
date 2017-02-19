@@ -1,0 +1,51 @@
+Delivered-To: bashkarev.d@gmail.com
+Received: by 10.237.50.66 with SMTP id y60csp30284qtd;
+        Thu, 9 Feb 2017 20:01:09 -0800 (PST)
+X-Received: by 10.25.89.148 with SMTP id n142mr1931448lfb.64.1486699269775;
+        Thu, 09 Feb 2017 20:01:09 -0800 (PST)
+Return-Path: <billruf@bill.example.com>
+Received: from bill.example.com (bill.example.com. [127.0.0.1])
+        by mx.google.com with ESMTPS id h3si261291lfj.361.2017.02.09.20.01.09
+        for <bashkarev.d@gmail.com>
+        (version=TLS1 cipher=AES128-SHA bits=128/128);
+        Thu, 09 Feb 2017 20:01:09 -0800 (PST)
+Received-SPF: pass (google.com: best guess record for domain of billruf@bill.example.com designates 127.0.0.1 as permitted sender) client-ip=127.0.0.1;
+Authentication-Results: mx.google.com;
+       spf=pass (google.com: best guess record for domain of billruf@bill.example.com designates 127.0.0.1 as permitted sender) smtp.mailfrom=billruf@bill.example.com
+Received: from billruf by bill.example.com with local (Exim 4.63)
+	(envelope-from <billruf@bill.example.com>)
+	id 1cc2NR-0004kI-Hp
+	for bashkarev.d@gmail.com; Fri, 10 Feb 2017 07:00:05 +0300
+To: bashkarev.d@gmail.com
+Subject:  Окончание срока регистрации домена  - 2017-02-16
+From: Manager <domains@example.com>
+Content-Type: text/plain; charset="windows-1251"
+Reply-To: domains@example.com
+Message-Id: <E1cc2NR-0004kI-Hp@bill.example.com>
+Date: Fri, 10 Feb 2017 07:00:05 +0300
+
+Уважаемый абонент,
+
+Срок делегирования домена  истекает {DATEND}.
+
+Для продления домена Вам необходимо сделать следующее:
+
+
+В случае, если регистрация домена не будет продлена до окончания срока
+регистрации, домен будет снят с делегирования. Если домен не будет продлен
+в течение 30 дней с момента окончания срока регистрации, то он будет освобожден
+и может быть зарегистрирован любым желающим.
+
+* * *
+
+Domain  expires at 2017-02-16.
+
+If you have not renewed domain by the expiration date, domain is put on-hold
+(31 days for .ru/.su domains).
+Deactivated domain names will no longer be resolved. During on-hold period
+you will be able to renew it. Domain name that have not been renewed
+will automatically be deleted from the registry.
+
+-------------------------------
+С уважением,
+Служба поддержки
