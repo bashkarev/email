@@ -42,15 +42,15 @@ class TestCase extends \PHPUnit\Framework\TestCase
     {
         if (is_string($file)) {
             if ($file[0] === '/') {
-                $steam = fopen(__DIR__ . "/fixtures{$file}", 'r+');
+                $stream = fopen(__DIR__ . "/fixtures{$file}", 'r+');
             } else {
-                $steam = fopen('php://memory', 'r+');
-                fwrite($steam, $file);
+                $stream = fopen('php://memory', 'r+');
+                fwrite($stream, $file);
             }
         } else {
-            $steam = $file;
+            $stream = $file;
         }
-        return Parser::email($steam);
+        return Parser::email($stream);
     }
 
     /**

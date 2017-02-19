@@ -36,6 +36,10 @@ class Email
      * @var resource
      */
     protected $handle;
+    /**
+     * @var string
+     */
+    protected $line;
 
     /**
      * @param resource|string $handle
@@ -64,7 +68,7 @@ class Email
      */
     protected function read()
     {
-        $line = $this->getLine();
+        $line = $this->nextLine();
         if (
             $this->parseBoundary($line) === true
             || $this->parseHeader($line) === true
@@ -87,9 +91,10 @@ class Email
     /**
      * @return string
      */
-    protected function getLine()
+    protected function nextLine()
     {
-        return rtrim(fgets($this->handle), "\n\r");
+        $this->line = fgets($this->handle);
+        return rtrim($this->line, "\n\r");
     }
 
     /**

@@ -29,7 +29,7 @@ trait Header
         list($field, $value) = $this->lineHeader($line);
         $i = ftell($this->handle);
         while (feof($this->handle) === false) {
-            $line = $this->getLine();
+            $line = $this->nextLine();
             if (
                 ($this->allowedHeader = ($line !== '')) === false
                 || ($line[0] !== "\t" && $line[0] !== ' ')

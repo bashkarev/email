@@ -8,6 +8,7 @@
 namespace bashkarev\email\parser\tokens;
 
 use bashkarev\email\Parser;
+use bashkarev\email\Stream;
 
 trait Content
 {
@@ -22,21 +23,24 @@ trait Content
             return false;
         }
 
-        $steam = $this->context()->getStream();
-
+        /**
+         * @var $stream Stream
+         */
+        $stream = $this->context()->getStream();
         if ($line !== '') { // start EOL
-            $steam->write($line . PHP_EOL);
+            $stream->write($this->line);
         }
 
         $offset = ftell($this->handle);
         while (feof($this->handle) === false) {
             $buff = stream_get_line($this->handle, Parser::$buffer, "\n-");
             if (@$buff[0] === '-') {
+                $stream->write("\n");
                 fseek($this->handle, $offset);
                 break 1;
             }
-            $steam->write($buff);
-            $offset = ftell($this->handle) - 2;
+            $stream->write($buff);
+            $offset = ftell($this->handle) - 1;
         }
         return true;
     }

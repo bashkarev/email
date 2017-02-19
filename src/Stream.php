@@ -26,7 +26,6 @@ class Stream
     protected $handle;
 
     /**
-     * Steam constructor.
      * @param Mime $mime
      */
     public function __construct(Mime $mime)
