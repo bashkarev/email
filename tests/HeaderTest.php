@@ -6,6 +6,7 @@
  */
 
 namespace bashkarev\email\tests;
+
 use bashkarev\email\Message;
 
 /**
@@ -26,9 +27,11 @@ class HeaderTest extends TestCase
 
     public function testEncode()
     {
+        if (PHP_VERSION_ID < 50600) {
+            return;
+        }
         $this
             ->field("Subject: =?ISO-2022-JP?B?GyRCRnxLXDhsGyhC?=", '日本語', 'subject')
-            ->field('Subject: =?ISO-2022-JP?B?GyRCRnxLXDhsGyhC?=', '日本語', 'subject')
             ->field("Subject: =?ISO-2022-JP?B?GyRCRDkkJEQ5JCREOSQkGyhCU3ViamVjdBskQiROPmw5ZyRPGyhCZm9s?=\r\n\t=?ISO-2022-JP?B?ZGluZxskQiQ5JGskTiQsQDUkNyQkJHMkQCQxJEkkJCRDJD8kJCRJGyhC?=\r\n\t=?ISO-2022-JP?B?GyRCJCYkSiRrJHMkQCRtJCYhKRsoQg==?=", '長い長い長いSubjectの場合はfoldingするのが正しいんだけどいったいどうなるんだろう？', 'subject')
             ->field('Subject: =?ISO-8859-1?Q?Mail_avec_fichier_attach=E9_de_1ko?=', 'Mail avec fichier attaché de 1ko', 'subject')
             ->field('Subject: =?ISO-8859-1?Q?Informaci=F3n_Apartamento_a_la_Venta?= =?ISO-8859-1?Q?_en_Benasque(Demandas:_0442_______)?=,', 'Información Apartamento a la Venta en Benasque(Demandas: 0442       ),', 'subject')
@@ -39,6 +42,7 @@ class HeaderTest extends TestCase
             ->field('/m0066.eml', 'Окончание срока регистрации домена  - 2017-02-16', function (Message $message) {
                 return $message->getSubject();
             });
+
     }
 
 }
