@@ -1,6 +1,5 @@
 .idea
 nbproject
-/composer.lock
 /vendor
 /example
 /bin
