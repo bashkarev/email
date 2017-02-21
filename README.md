@@ -39,7 +39,7 @@ $message->getAttachments();
 $file = fopen('path/to/file.eml', 'r');
 $message = \bashkarev\email\Parser::email($file);
 foreach ($message->getAttachments() as $attachment) {
-    $attachment->save('dir/' . $attachment->getName());
+    $attachment->save('dir/' . $attachment->getFileName('undefined'));
 }
 ```
 
@@ -49,6 +49,6 @@ $file = fopen('path/to/file.eml', 'r');
 $message = \bashkarev\email\Parser::email($file);
 $attachment = $message->getAttachments()[0];
 header("Content-Type: {$attachment->getMimeType()};");
-header("Content-Disposition: attachment; filename=\"{$attachment->getName()}\"");
+header("Content-Disposition: attachment; filename=\"{$attachment->getFileName('undefined')}\"");
 $attachment->getStream()->onFilter(fopen('php://output', 'c'));
 ```

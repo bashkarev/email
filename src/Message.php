@@ -1,12 +1,13 @@
 <?php
 /**
  * @copyright Copyright (c) 2017 Dmitriy Bashkarev
- * @license https://github.com/bashkarev/eamil/blob/master/LICENSE
- * @link https://github.com/bashkarev/eamil#readme
+ * @license https://github.com/bashkarev/email/blob/master/LICENSE
+ * @link https://github.com/bashkarev/email#readme
  */
 
 namespace bashkarev\email;
 
+use bashkarev\email\helpers\Address;
 use DateTime;
 
 /**
@@ -45,7 +46,7 @@ class Message extends Mime
      */
     public function getFrom()
     {
-        $from = Parser::address($this->getHeaderLine('from'), $this->getCharset());
+        $from = Address::parse($this->getHeaderLine('from'), $this->getCharset());
         if ($from === []) {
             return null;
         }
@@ -57,7 +58,7 @@ class Message extends Mime
      */
     public function getSender()
     {
-        $from = Parser::address($this->getHeaderLine('sender'), $this->getCharset());
+        $from = Address::parse($this->getHeaderLine('sender'), $this->getCharset());
         if ($from === []) {
             return null;
         }
@@ -69,7 +70,7 @@ class Message extends Mime
      */
     public function getTo()
     {
-        return Parser::address($this->getHeaderLine('to'), $this->getCharset());
+        return Address::parse($this->getHeaderLine('to'), $this->getCharset());
     }
 
     /**

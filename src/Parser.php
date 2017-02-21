@@ -1,13 +1,12 @@
 <?php
 /**
  * @copyright Copyright (c) 2017 Dmitriy Bashkarev
- * @license https://github.com/bashkarev/eamil/blob/master/LICENSE
- * @link https://github.com/bashkarev/eamil#readme
+ * @license https://github.com/bashkarev/email/blob/master/LICENSE
+ * @link https://github.com/bashkarev/email#readme
  */
 
 namespace bashkarev\email;
 
-use bashkarev\email\parser\Address;
 use bashkarev\email\parser\Email;
 
 /**
@@ -26,17 +25,6 @@ class Parser
     {
         $parser = new Email();
         return $parser->parse($handle);
-    }
-
-    /**
-     * @param $value
-     * @param $charset
-     * @return \bashkarev\email\Address[]
-     */
-    public static function address($value, $charset)
-    {
-        $parser = new Address();
-        return $parser->parse($value, $charset);
     }
 
 }

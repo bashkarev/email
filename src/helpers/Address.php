@@ -1,11 +1,11 @@
 <?php
 /**
  * @copyright Copyright (c) 2017 Dmitriy Bashkarev
- * @license https://github.com/bashkarev/eamil/blob/master/LICENSE
- * @link https://github.com/bashkarev/eamil#readme
+ * @license https://github.com/bashkarev/email/blob/master/LICENSE
+ * @link https://github.com/bashkarev/email#readme
  */
 
-namespace bashkarev\email\parser;
+namespace bashkarev\email\helpers;
 
 use bashkarev\email\Parser;
 
@@ -19,12 +19,12 @@ class Address
      * @param $charset
      * @return array
      */
-    public function parse($text, $charset)
+    public static function parse($text, $charset)
     {
         $addresses = [];
         $values = explode(',', $text);
         foreach ($values as $value) {
-            $address = $this->item($value);
+            $address = self::item($value);
             if ($address->email === null) {
                 continue;
             }
@@ -41,7 +41,7 @@ class Address
      * @param $string
      * @return \bashkarev\email\Address
      */
-    private function item($string)
+    private static function item($string)
     {
         $address = new \bashkarev\email\Address();
         foreach (explode(' ', $string) as $value) {

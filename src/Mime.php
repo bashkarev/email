@@ -1,11 +1,14 @@
 <?php
 /**
  * @copyright Copyright (c) 2017 Dmitriy Bashkarev
- * @license https://github.com/bashkarev/eamil/blob/master/LICENSE
- * @link https://github.com/bashkarev/eamil#readme
+ * @license https://github.com/bashkarev/email/blob/master/LICENSE
+ * @link https://github.com/bashkarev/email#readme
  */
 
 namespace bashkarev\email;
+
+use bashkarev\email\helpers\MimeHelper;
+use bashkarev\email\helpers\RFC5987;
 
 /**
  * @author Dmitriy Bashkarev <dmitriy@bashkarev.com>
@@ -34,19 +37,21 @@ class Mime
      */
     public function isAttachment()
     {
-        $mime = $this->getMimeType();
-        if (
-            $mime === 'message/rfc822'
-            || $mime === 'application/octet-stream'
-        ) {
-            return true;
-        }
         foreach ($this->getHeader('content-disposition') as $head) {
-            if (strncasecmp($head, 'filename', 8) === 0) {
+            if (strncasecmp($head, 'attachment', 10) === 0) {
                 return true;
             }
         }
-        return false;
+        $mime = $this->getMimeType();
+        if (
+            $mime === null
+            || $mime === 'text/plain'
+            || $mime === 'text/html'
+            || strncmp($mime, 'multipart/', 10) === 0
+        ) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -127,14 +132,14 @@ class Mime
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getMimeType()
     {
         if ($this->hasHeader('content-type')) {
             return mb_strtolower($this->getHeader('content-type')[0]);
         }
-        return 'text/plain';
+        return null;
     }
 
     /**
@@ -166,34 +171,6 @@ class Mime
      */
     public function getName()
     {
-        ///
-        $name = null;
-        $charset = null;
-        $encode = null;
-        foreach ($this->getHeader('content-disposition') as $head) {
-            if (strncasecmp($head, 'filename', 8) !== 0) {
-                continue;
-            }
-            if ($head[8] === '*') {
-                if (preg_match('/filename\*(0\*|)=([^\']+)\'\'(.*)/', $head, $out)) {
-                    $charset = mb_strtoupper($out[2]);
-                    $encode = $out[3];
-                } else {
-                    $encode .= preg_replace('/filename\*\d+\*\=/', '', $head);
-                }
-            } else {
-                $name = str_replace(['filename', '"', ' ', '='], '', $head);
-            }
-        }
-
-        if ($encode !== null) {
-            $name = urldecode($encode);
-            if ($charset !== Parser::$charset) {
-                $name = mb_convert_encoding($name, Parser::$charset, $charset);
-            }
-        }
-        //
-
         foreach ($this->getHeader('content-type') as $head) {
             if (strncasecmp($head, 'name', 4) !== 0) {
                 continue;
@@ -202,12 +179,36 @@ class Mime
             if ($this->getCharset() !== Parser::$charset) {
                 mb_convert_encoding($name, Parser::$charset, $this->getCharset());
             }
+            return $name;
         }
+        return null;
+    }
 
-
+    /**
+     * @param null|string $default
+     * @return null|string
+     */
+    public function getFileName($default = null)
+    {
+        $name = RFC5987::filename($this->getHeader('content-disposition'));
         if ($name === null) {
-            $name = $this->createName();
+            $name = $this->getName();
         }
+
+        if ($name === null && $default !== null) {
+            $name = $default;
+        }
+
+        if (
+            $name !== null
+            && ($mime = $this->getMimeType()) !== null
+            && !preg_match('/\.\w+$/', $name)
+            && isset(MimeHelper::$types[$mime])
+        ) {
+            //unless file extension
+            $name .= '.' . MimeHelper::$types[$mime];
+        }
+
         return $name;
     }
 
@@ -218,17 +219,6 @@ class Mime
     public function save($filename)
     {
         return (bool)$this->getStream()->onFilter(fopen($filename, 'w'));
-    }
-
-    /**
-     * @return string
-     */
-    protected function createName()
-    {
-        if ($this->getMimeType() === 'message/rfc822') {
-            return 'message.eml';
-        }
-        return 'unknown.eml';
     }
 
     /**
