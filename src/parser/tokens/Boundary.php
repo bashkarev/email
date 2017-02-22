@@ -42,10 +42,10 @@ trait Boundary
     {
         if (
             $type === self::T_HEADER
-            && $value[0] === 'Content-Type' //
+            && strcasecmp($value[0], 'Content-Type') === 0
             && preg_match('/boundary(?:=|\s=)([^;]+)/i', $value[1], $out)
         ) {
-            $id = trim(str_replace('"', '', $out[1]));
+            $id = trim(str_replace(['"', "'"], '', $out[1]));
             $this->boundary['--' . $id] = [self::T_START_BOUNDARY, $id];
             $this->boundary['--' . $id . '--'] = [self::T_END_BOUNDARY, $id];
         } else if ($type === self::T_START_BOUNDARY) {

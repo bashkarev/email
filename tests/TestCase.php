@@ -62,4 +62,18 @@ class TestCase extends \PHPUnit\Framework\TestCase
         return file_get_contents(__DIR__ . "/fixtures{$file}");
     }
 
+    /**
+     * @param $className
+     * @param $propertyName
+     * @return \ReflectionProperty
+     */
+    protected function getProperty($className, $propertyName)
+    {
+        $reflector = new \ReflectionClass($className);
+        $property = $reflector->getProperty($propertyName);
+        $property->setAccessible(true);
+
+        return $property;
+    }
+
 }
