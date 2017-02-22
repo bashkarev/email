@@ -42,24 +42,35 @@ class Email
     protected $line;
 
     /**
-     * @param resource|string $handle
+     * @param resource|string|array $handles
+     * @param boolean $afterClose
      * @return Message
      */
-    public function parse($handle)
+    public function parse($handles, $afterClose = true)
     {
-        if (!is_resource($handle)) {
-            $this->handle = fopen('php://memory', 'r+');
-            fwrite($this->handle, $handle);
-        } else {
-            $this->handle = $handle;
+        if (!is_array($handles)) {
+            $handles = [$handles];
         }
-        rewind($this->handle);
         $this->message = new Message();
-        while (feof($this->handle) === false) {
-            $this->read();
+        foreach ($handles as $handle) {
+            if (!is_resource($handle)) {
+                $this->handle = fopen('php://memory', 'r+');
+                fwrite($this->handle, $handle);
+            } else {
+                $this->handle = $handle;
+            }
+            rewind($this->handle);
+            while (feof($this->handle) === false) {
+                $this->read();
+            }
+            if ($afterClose) {
+                fclose($this->handle);
+            }
+            $this->handle = null;
+            $this->allowedHeader = true;
         }
         $this->insertPart();
-        fclose($this->handle);
+
         return $this->message;
     }
 

@@ -112,4 +112,12 @@ class Stream
         }
     }
 
+    /**
+     * @return resource
+     */
+    public function getHandle()
+    {
+        return $this->handle;
+    }
+
 }

@@ -8,6 +8,7 @@
 namespace bashkarev\email;
 
 use bashkarev\email\helpers\MimeHelper;
+use bashkarev\email\parser\Email;
 use bashkarev\email\helpers\RFC5987;
 
 /**
@@ -31,6 +32,26 @@ class Mime
      * @var Stream
      */
     private $stream;
+    /**
+     * @var Message
+     */
+    private $message;
+
+    /**
+     * @return Message|null
+     */
+    public function getMessage()
+    {
+        if (
+            $this->message === null
+            && $this->stream !== null
+            && ($mime = $this->getMimeType()) !== null
+            && ($mime === 'message/rfc822' || $mime === 'message/partial')
+        ) {
+            $this->message = (new Email())->parse($this->stream->getHandle(), false);
+        }
+        return $this->message;
+    }
 
     /**
      * @return bool

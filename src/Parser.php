@@ -18,13 +18,13 @@ class Parser
     public static $charset = 'UTF-8';
 
     /**
-     * @param $handle
+     * @param mixed $handles
      * @return Message
      */
-    public static function email($handle)
+    public static function email($handles)
     {
         $parser = new Email();
-        return $parser->parse($handle);
+        return $parser->parse($handles);
     }
 
 }

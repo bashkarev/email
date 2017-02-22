@@ -52,3 +52,12 @@ header("Content-Type: {$attachment->getMimeType()};");
 header("Content-Disposition: attachment; filename=\"{$attachment->getFileName('undefined')}\"");
 $attachment->getStream()->onFilter(fopen('php://output', 'c'));
 ```
+
+### message/partial
+```php
+$block = \bashkarev\email\Parser::email([
+    fopen('path/to/part.1.eml', 'r'),
+    fopen('path/to/part.2.eml', 'r'),
+]);
+$block->getMessage()
+```

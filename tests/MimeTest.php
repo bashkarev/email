@@ -9,6 +9,7 @@ namespace bashkarev\email\tests;
 
 use bashkarev\email\Message;
 use bashkarev\email\Mime;
+use bashkarev\email\Parser;
 
 /**
  * @author Dmitriy Bashkarev <dmitriy@bashkarev.com>
@@ -78,6 +79,19 @@ class MimeTest extends TestCase
         $part = new Mime();
         $part->setHeader('Content-Type', 'image/gif; name="logo.jpg"');
         $this->assertEquals('logo.jpg', $part->getName());
+    }
+
+    public function testMessagePartial()
+    {
+        $block = Parser::email([
+            fopen(__DIR__ . '/fixtures/message-partial.1.msg.eml', 'r'),
+            fopen(__DIR__ . '/fixtures/message-partial.2.msg.eml', 'r'),
+        ]);
+        $message = $block->getMessage();
+        $this->assertTrue($message->hasAttachments());
+        $this->assertEquals(file_get_contents(__DIR__ . '/fixtures/attachments/message-partial.txt'), $message->textPlain());
+        $this->assertEquals('{15_3779, Victoria & Cherry}: suzeFan - 2377h003.jpg', $message->getSubject());
+        $this->assertEquals(file_get_contents(__DIR__ . '/fixtures/attachments/2377h003.jpg'), $message->getAttachments()[0]->getStream()->getContents());
     }
 
 }
