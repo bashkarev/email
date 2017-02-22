@@ -53,7 +53,7 @@ header("Content-Disposition: attachment; filename=\"{$attachment->getFileName('u
 $attachment->getStream()->onFilter(fopen('php://output', 'c'));
 ```
 
-### message/partial
+## message/partial
 ```php
 $block = \bashkarev\email\Parser::email([
     fopen('path/to/part.1.eml', 'r'),
