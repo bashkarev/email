@@ -61,3 +61,10 @@ $block = \bashkarev\email\Parser::email([
 ]);
 $block->getMessage()
 ```
+
+## message/rfc822
+```php
+$file = fopen('path/to/file.eml', 'r');
+$main = \bashkarev\email\Parser::email($file);
+$message = $main->getAttachments()[0]->getMessage();
+```

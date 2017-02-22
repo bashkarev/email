@@ -89,9 +89,19 @@ class MimeTest extends TestCase
         ]);
         $message = $block->getMessage();
         $this->assertTrue($message->hasAttachments());
-        $this->assertEquals(file_get_contents(__DIR__ . '/fixtures/attachments/message-partial.txt'), $message->textPlain());
+        $this->assertEquals(file_get_contents(__DIR__ . '/fixtures/text/message-partial.txt'), $message->textPlain());
         $this->assertEquals('{15_3779, Victoria & Cherry}: suzeFan - 2377h003.jpg', $message->getSubject());
         $this->assertEquals(file_get_contents(__DIR__ . '/fixtures/attachments/2377h003.jpg'), $message->getAttachments()[0]->getStream()->getContents());
+    }
+
+    public function testMessageRFC822()
+    {
+        $this->field('/enclosed.eml', function (Message $main) {
+            $this->assertTrue($main->hasAttachments());
+            $message = $main->getAttachments()[0]->getMessage();
+            $this->assertNotNull($message);
+            $this->assertEquals(file_get_contents(__DIR__ . '/fixtures/text/enclosed.txt'), $message->textHtml());
+        });
     }
 
 }
