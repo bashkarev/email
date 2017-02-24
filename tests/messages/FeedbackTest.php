@@ -53,19 +53,6 @@ class FeedbackTest extends TestCase
                 $this->assertEquals('Yahoo!-Mail-Feedback/1.0', $feedback->getUserAgent());
                 $this->assertEquals('bounce+705f77.d4a-user=yahoo.com@example.com', $feedback->getOriginalMailFrom()->email);
             });
-
-
-        $file = fopen('path/to/file.eml', 'r');
-        $container = \bashkarev\email\Parser::email($file);
-        foreach ($container->getAttachments() as $attachment) {
-            if ($attachment->getMimeType() === 'message/feedback-report') {
-                /**
-                 * @var \bashkarev\email\messages\Feedback $feedback
-                 */
-                $feedback = $attachment->getMessage();
-                $feedback->getType(); // Feedback::TYPE_ABUSE ...
-            }
-        }
     }
 
 }
