@@ -34,7 +34,7 @@ trait Content
         $offset = ftell($this->handle);
         while (feof($this->handle) === false) {
             $buff = stream_get_line($this->handle, Parser::$buffer, "\n-");
-            if (@$buff[0] === '-') {
+            if (isset($buff[0]) && $buff[0] === '-') {
                 $stream->write("\n");
                 fseek($this->handle, $offset);
                 break 1;
