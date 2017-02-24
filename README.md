@@ -65,6 +65,22 @@ $block->getMessage()
 ## message/rfc822
 ```php
 $file = fopen('path/to/file.eml', 'r');
-$main = \bashkarev\email\Parser::email($file);
-$message = $main->getAttachments()[0]->getMessage();
+$container = \bashkarev\email\Parser::email($file);
+$message = $container->getAttachments()[0]->getMessage();
+```
+
+## message/feedback-report
+```php
+$file = fopen('path/to/file.eml', 'r');
+$container = \bashkarev\email\Parser::email($file);
+foreach ($container->getAttachments() as $attachment) {
+    if ($attachment->getMimeType() === 'message/feedback-report') {
+        /**
+         * @var \bashkarev\email\messages\Feedback $feedback
+         */
+        $feedback = $attachment->getMessage();
+        $feedback->getType(); // Feedback::TYPE_ABUSE ...
+    }
+}
+
 ```

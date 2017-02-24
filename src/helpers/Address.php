@@ -17,7 +17,7 @@ class Address
     /**
      * @param $text
      * @param $charset
-     * @return array
+     * @return \bashkarev\email\Address[]
      */
     public static function parse($text, $charset)
     {
