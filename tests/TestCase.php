@@ -16,8 +16,8 @@ class TestCase extends \PHPUnit\Framework\TestCase
 {
 
     /**
-     * @param $value
-     * @param $expected
+     * @param mixed $value
+     * @param mixed $expected
      * @param string|callable $filed
      * @param string $description
      * @return $this
@@ -29,22 +29,22 @@ class TestCase extends \PHPUnit\Framework\TestCase
             $expected($message);
             return $this;
         }
-        $actual = (is_callable($filed)) ? $filed($message) : $message->getHeaderLine($filed);
+        $actual = is_callable($filed) ? $filed($message) : $message->getHeaderLine($filed);
         $this->assertEquals($expected, $actual, $description);
         return $this;
     }
 
     /**
-     * @param $file
+     * @param mixed $file
      * @return \bashkarev\email\Message
      */
     protected function message($file)
     {
         if (is_string($file)) {
             if ($file[0] === '/') {
-                $stream = fopen(__DIR__ . "/fixtures{$file}", 'r+');
+                $stream = fopen(__DIR__ . "/fixtures{$file}", 'rb+');
             } else {
-                $stream = fopen('php://memory', 'r+');
+                $stream = fopen('php://memory', 'rb+');
                 fwrite($stream, $file);
             }
         } else {
@@ -54,17 +54,10 @@ class TestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @param $file
-     * @return string
-     */
-    protected function html($file)
-    {
-        return file_get_contents(__DIR__ . "/fixtures{$file}");
-    }
-
-    /**
-     * @param $className
-     * @param $propertyName
+     * Returns property value
+     *
+     * @param string $className
+     * @param string $propertyName
      * @return \ReflectionProperty
      */
     protected function getProperty($className, $propertyName)

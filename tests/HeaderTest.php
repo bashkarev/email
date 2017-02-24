@@ -18,11 +18,11 @@ class HeaderTest extends TestCase
     public function testConcatenating()
     {
         $this
-            ->field("Subject: This is a test", "This is a test", "subject")
-            ->field("Subject  : Saying Hello", "Saying Hello", "subject")
-            ->field("Subject: This\r\n is a test\r\n  temp  ", "This is a test temp", "subject")
-            ->field("Subject: This \r\nFri, 21 Nov 1997 09", "This", "subject")
-            ->field("Subject: This \r\n\tFri, 21 Nov 1997 09(comment):   55  :  06 -0600\r\nUndefined:test", "This  Fri, 21 Nov 1997 09(comment):   55  :  06 -0600", "subject");
+            ->field('Subject: This is a test', 'This is a test', 'subject')
+            ->field('Subject  : Saying Hello', 'Saying Hello', 'subject')
+            ->field("Subject: This\r\n is a test\r\n  temp  ", 'This is a test temp', 'subject')
+            ->field("Subject: This \r\nFri, 21 Nov 1997 09", 'This', 'subject')
+            ->field("Subject: This \r\n\tFri, 21 Nov 1997 09(comment):   55  :  06 -0600\r\nUndefined:test", 'This  Fri, 21 Nov 1997 09(comment):   55  :  06 -0600', 'subject');
     }
 
     public function testEncode()
@@ -31,7 +31,7 @@ class HeaderTest extends TestCase
             return;
         }
         $this
-            ->field("Subject: =?ISO-2022-JP?B?GyRCRnxLXDhsGyhC?=", '日本語', 'subject')
+            ->field('Subject: =?ISO-2022-JP?B?GyRCRnxLXDhsGyhC?=', '日本語', 'subject')
             ->field("Subject: =?ISO-2022-JP?B?GyRCRDkkJEQ5JCREOSQkGyhCU3ViamVjdBskQiROPmw5ZyRPGyhCZm9s?=\r\n\t=?ISO-2022-JP?B?ZGluZxskQiQ5JGskTiQsQDUkNyQkJHMkQCQxJEkkJCRDJD8kJCRJGyhC?=\r\n\t=?ISO-2022-JP?B?GyRCJCYkSiRrJHMkQCRtJCYhKRsoQg==?=", '長い長い長いSubjectの場合はfoldingするのが正しいんだけどいったいどうなるんだろう？', 'subject')
             ->field('Subject: =?ISO-8859-1?Q?Mail_avec_fichier_attach=E9_de_1ko?=', 'Mail avec fichier attaché de 1ko', 'subject')
             ->field('Subject: =?ISO-8859-1?Q?Informaci=F3n_Apartamento_a_la_Venta?= =?ISO-8859-1?Q?_en_Benasque(Demandas:_0442_______)?=,', 'Información Apartamento a la Venta en Benasque(Demandas: 0442       ),', 'subject')

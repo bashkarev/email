@@ -57,7 +57,7 @@ class MimeTest extends TestCase
         $this->assertEquals('long name with spaces, very very very very long long long long.txt', $part->getFileName());
 
         $part = new Mime();
-        $part->setHeader('Content-Disposition', "attachment; filename=simple.txt");
+        $part->setHeader('Content-Disposition', 'attachment; filename=simple.txt');
         $this->assertEquals('simple.txt', $part->getFileName());
 
         $part = new Mime();
@@ -84,14 +84,14 @@ class MimeTest extends TestCase
     public function testMessagePartial()
     {
         $block = Parser::email([
-            fopen(__DIR__ . '/fixtures/message-partial.1.msg.eml', 'r'),
-            fopen(__DIR__ . '/fixtures/message-partial.2.msg.eml', 'r'),
+            fopen(__DIR__ . '/fixtures/message-partial.1.msg.eml', 'rb'),
+            fopen(__DIR__ . '/fixtures/message-partial.2.msg.eml', 'rb'),
         ]);
         $message = $block->getMessage();
         $this->assertTrue($message->hasAttachments());
-        $this->assertEquals(file_get_contents(__DIR__ . '/fixtures/text/message-partial.txt'), $message->textPlain());
+        $this->assertStringEqualsFile(__DIR__ . '/fixtures/text/message-partial.txt', $message->textPlain());
         $this->assertEquals('{15_3779, Victoria & Cherry}: suzeFan - 2377h003.jpg', $message->getSubject());
-        $this->assertEquals(file_get_contents(__DIR__ . '/fixtures/attachments/2377h003.jpg'), $message->getAttachments()[0]->getStream()->getContents());
+        $this->assertStringEqualsFile(__DIR__ . '/fixtures/attachments/2377h003.jpg', $message->getAttachments()[0]->getStream()->getContents());
     }
 
     public function testMessageRFC822()
@@ -100,7 +100,7 @@ class MimeTest extends TestCase
             $this->assertTrue($main->hasAttachments());
             $message = $main->getAttachments()[0]->getMessage();
             $this->assertNotNull($message);
-            $this->assertEquals(file_get_contents(__DIR__ . '/fixtures/text/enclosed.txt'), $message->textHtml());
+            $this->assertStringEqualsFile(__DIR__ . '/fixtures/text/enclosed.txt', $message->textHtml());
         });
     }
 
