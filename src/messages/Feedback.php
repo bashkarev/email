@@ -18,23 +18,23 @@ use bashkarev\email\Message;
 class Feedback extends Message
 {
     /**
-     * spam or some other kind of email abuse;
+     * Spam or some other kind of email abuse;
      */
     const TYPE_ABUSE = 'abuse';
     /**
-     * indicates some kind of fraud or phishing activity;
+     * Indicates some kind of fraud or phishing activity;
      */
     const TYPE_FRAUD = 'fraud';
     /**
-     * report of a virus found in the originating message;
+     * Report of a virus found in the originating message;
      */
     const TYPE_VIRUS = 'virus';
     /**
-     * any other feedback that doesn't fit into other types;
+     * Any other feedback that doesn't fit into other types;
      */
     const TYPE_OTHER = 'other';
     /**
-     * can be used to report an email message that was mistakenly marked as spam
+     * Can be used to report an email message that was mistakenly marked as spam
      */
     const TYPE_NOT_SPAM = 'not-spam';
 

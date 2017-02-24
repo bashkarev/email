@@ -64,15 +64,10 @@ class Mime
             }
         }
         $mime = $this->getMimeType();
-        if (
-            $mime === null
+        return !($mime === null
             || $mime === 'text/plain'
             || $mime === 'text/html'
-            || strncmp($mime, 'multipart/', 10) === 0
-        ) {
-            return false;
-        }
-        return true;
+            || strncmp($mime, 'multipart/', 10) === 0);
     }
 
     /**
@@ -129,7 +124,7 @@ class Mime
     }
 
     /**
-     * @param $header
+     * @param string $header
      * @return array
      */
     public function getHeader($header)
@@ -223,8 +218,8 @@ class Mime
         if (
             $name !== null
             && ($mime = $this->getMimeType()) !== null
-            && !preg_match('/\.\w+$/', $name)
             && isset(MimeHelper::$types[$mime])
+            && !preg_match('/\.\w+$/', $name)
         ) {
             //unless file extension
             $name .= '.' . MimeHelper::$types[$mime];
@@ -239,7 +234,7 @@ class Mime
      */
     public function save($filename)
     {
-        return (bool)$this->getStream()->onFilter(fopen($filename, 'w'));
+        return (bool)$this->getStream()->onFilter(fopen($filename, 'wb'));
     }
 
     /**
