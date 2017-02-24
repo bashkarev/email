@@ -55,12 +55,10 @@ class Email
      */
     public function parse($handles, $afterClose = true)
     {
-        if (!is_array($handles)) {
-            $handles = [$handles];
-        }
+        $handles = (array)$handles;
         foreach ($handles as $handle) {
             if (!is_resource($handle)) {
-                $this->handle = fopen('php://memory', 'r+');
+                $this->handle = fopen('php://memory', 'rb+');
                 fwrite($this->handle, $handle);
             } else {
                 $this->handle = $handle;

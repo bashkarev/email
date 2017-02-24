@@ -34,7 +34,7 @@ class Stream
             $this->encoded = mb_strtolower($mime->getHeaderLine('content-transfer-encoding')); //ToDo move to method
         }
         $this->charset = $mime->getCharset();
-        $this->handle = fopen('php://temp', 'r+');
+        $this->handle = fopen('php://temp', 'rb+');
     }
 
     /**
@@ -91,7 +91,7 @@ class Stream
     {
         ob_start();
         ob_implicit_flush(false);
-        $this->onFilter(fopen('php://output', 'c'));
+        $this->onFilter(fopen('php://output', 'cb'));
         $contents = ob_get_clean();
         if ($this->charset !== Parser::$charset) {
             $contents = mb_convert_encoding($contents, Parser::$charset, $this->charset);
