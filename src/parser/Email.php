@@ -8,6 +8,7 @@
 namespace bashkarev\email\parser;
 
 use bashkarev\email\Message;
+use bashkarev\email\Parser;
 use bashkarev\email\Part;
 
 /**
@@ -41,6 +42,12 @@ class Email
      */
     protected $line;
 
+    public function __construct($mime = null)
+    {
+        $class = ($mime !== null && isset(Parser::$map[$mime])) ? Parser::$map[$mime] : 'bashkarev\email\Message';
+        $this->message = new $class();
+    }
+
     /**
      * @param resource|string|array $handles
      * @param boolean $afterClose
@@ -51,7 +58,6 @@ class Email
         if (!is_array($handles)) {
             $handles = [$handles];
         }
-        $this->message = new Message();
         foreach ($handles as $handle) {
             if (!is_resource($handle)) {
                 $this->handle = fopen('php://memory', 'r+');
