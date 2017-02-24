@@ -16,6 +16,13 @@ class Parser
 {
     public static $buffer = 500000;
     public static $charset = 'UTF-8';
+    /**
+     * mime message class map
+     * @var array
+     */
+    public static $map = [
+        'message/feedback-report' => 'bashkarev\email\messages\Feedback'
+    ];
 
     /**
      * @param mixed $handles

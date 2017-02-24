@@ -45,7 +45,7 @@ There is attachments parsing support.
 Saving to files could be done as follows:
 
 ```php
-$file = fopen('path/to/file.eml', 'r');
+$file = fopen('path/to/file.eml', 'rb');
 $message = \bashkarev\email\Parser::email($file);
 foreach ($message->getAttachments() as $attachment) {
     $attachment->save('dir/' . $attachment->getFileName('undefined'));
@@ -57,7 +57,7 @@ foreach ($message->getAttachments() as $attachment) {
 In order to stream attachment to output directly you need to do the following:
 
 ```php
-$file = fopen('path/to/file.eml', 'r');
+$file = fopen('path/to/file.eml', 'rb');
 $message = \bashkarev\email\Parser::email($file);
 $attachment = $message->getAttachments()[0];
 header("Content-Type: {$attachment->getMimeType()};");
@@ -69,8 +69,8 @@ $attachment->getStream()->onFilter(fopen('php://output', 'c'));
 
 ```php
 $block = \bashkarev\email\Parser::email([
-    fopen('path/to/part.1.eml', 'r'),
-    fopen('path/to/part.2.eml', 'r'),
+    fopen('path/to/part.1.eml', 'rb'),
+    fopen('path/to/part.2.eml', 'rb'),
 ]);
 $block->getMessage();
 ```
@@ -78,7 +78,23 @@ $block->getMessage();
 ## message/rfc822
 
 ```php
-$file = fopen('path/to/file.eml', 'r');
-$main = \bashkarev\email\Parser::email($file);
-$message = $main->getAttachments()[0]->getMessage();
+$file = fopen('path/to/file.eml', 'rb');
+$container = \bashkarev\email\Parser::email($file);
+$message = $container->getAttachments()[0]->getMessage();
+```
+
+## message/feedback-report
+```php
+$file = fopen('path/to/file.eml', 'rb');
+$container = \bashkarev\email\Parser::email($file);
+foreach ($container->getAttachments() as $attachment) {
+    if ($attachment->getMimeType() === 'message/feedback-report') {
+        /**
+         * @var \bashkarev\email\messages\Feedback $feedback
+         */
+        $feedback = $attachment->getMessage();
+        $feedback->getType(); // Feedback::TYPE_ABUSE ...
+    }
+}
+
 ```

@@ -46,9 +46,9 @@ class Mime
             $this->message === null
             && $this->stream !== null
             && ($mime = $this->getMimeType()) !== null
-            && ($mime === 'message/rfc822' || $mime === 'message/partial')
+            && strncmp($mime, 'message/', 8) === 0
         ) {
-            $this->message = (new Email())->parse($this->stream->getHandle(), false);
+            $this->message = (new Email($mime))->parse($this->stream->getHandle(), false);
         }
         return $this->message;
     }
