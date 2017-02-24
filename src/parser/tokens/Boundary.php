@@ -22,7 +22,7 @@ trait Boundary
      */
     protected function parseBoundary($line)
     {
-        if (@$line[0] !== '-') {
+        if (!isset($line[0]) || $line[0] !== '-') {
             return false;
         }
         $line = rtrim($line);
