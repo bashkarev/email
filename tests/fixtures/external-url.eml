@@ -1,0 +1,8 @@
+MIME-Version: 1.0
+Content-type: message/external-body; access-type=URL;
+              URL="https://ya.ru/"
+
+Content-type: text/html
+Content-Transfer-Encoding: binary
+
+THIS IS NOT REALLY THE BODY!

@@ -62,7 +62,7 @@ $message = \bashkarev\email\Parser::email($file);
 $attachment = $message->getAttachments()[0];
 header("Content-Type: {$attachment->getMimeType()};");
 header("Content-Disposition: attachment; filename=\"{$attachment->getFileName('undefined')}\"");
-$attachment->getStream()->onFilter(fopen('php://output', 'c'));
+$attachment->getStream()->copy(fopen('php://output', 'c'));
 ```
 
 ## message/partial

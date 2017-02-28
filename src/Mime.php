@@ -71,12 +71,23 @@ class Mime
     }
 
     /**
-     * @return Stream
+     * @return Stream|null
+     * @throws \Exception
      */
     public function getStream()
     {
         if ($this->stream === null) {
-            $this->stream = new Stream($this);
+            if ($this->getMimeType() === 'message/external-body') {
+                if (
+                    ($type = $this->getAccessType()) === null
+                    || !isset(Parser::$transport[$type])
+                ) {
+                    throw new \Exception("Not Supported transport: {$type}");
+                }
+                $this->stream = new Parser::$transport[$type]($this);
+            } else {
+                $this->stream = new Stream($this);
+            }
         }
         return $this->stream;
     }
@@ -161,6 +172,19 @@ class Mime
     /**
      * @return null|string
      */
+    public function getAccessType()
+    {
+        foreach ($this->getHeader('content-type') as $value) {
+            if (strpos($value, 'access-type') !== false) {
+                return mb_strtolower(str_replace(['access-type', '"', ' ', '='], '', $value));
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @return null|string
+     */
     public function getContentID()
     {
         if ($this->hasHeader('content-id')) {
@@ -234,7 +258,7 @@ class Mime
      */
     public function save($filename)
     {
-        return (bool)$this->getStream()->onFilter(fopen($filename, 'wb'));
+        return (bool)$this->getStream()->copy(fopen($filename, 'wb'));
     }
 
     /**

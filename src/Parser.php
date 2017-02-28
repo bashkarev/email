@@ -23,6 +23,12 @@ class Parser
     public static $map = [
         'message/feedback-report' => 'bashkarev\email\messages\Feedback'
     ];
+    /**
+     * @var array transport class map
+     */
+    public static $transport = [
+        'url' => 'bashkarev\email\transports\Url'
+    ];
 
     /**
      * @param mixed $handles

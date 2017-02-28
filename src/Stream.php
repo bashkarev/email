@@ -10,7 +10,7 @@ namespace bashkarev\email;
 /**
  * @author Dmitriy Bashkarev <dmitriy@bashkarev.com>
  */
-class Stream
+class Stream extends Transport
 {
     /**
      * @var string
@@ -38,7 +38,7 @@ class Stream
     }
 
     /**
-     * Close handle
+     * @inheritdoc
      */
     public function close()
     {
@@ -48,8 +48,15 @@ class Stream
     }
 
     /**
-     * @param $data
-     * @return $this
+     * @inheritdoc
+     */
+    public function getHandle()
+    {
+        return $this->handle;
+    }
+
+    /**
+     * @inheritdoc
      */
     public function write($data)
     {
@@ -58,15 +65,10 @@ class Stream
     }
 
     /**
-     * @param resource $handle
-     * @param null|int $length
-     * @return int
+     * @inheritdoc
      */
-    public function onFilter($handle, $length = null)
+    public function copy($handle, $length = null)
     {
-        if ($length === null) {
-            $length = Parser::$buffer;
-        }
         switch ($this->encoded) {
             case 'base64':
                 stream_filter_append($handle, 'convert.base64-decode');
@@ -75,24 +77,15 @@ class Stream
                 stream_filter_append($handle, 'convert.quoted-printable-decode');
                 break;
         }
-        rewind($this->handle);
-        while (feof($this->handle) === false) {
-            fwrite($handle, fread($this->handle, $length));
-        }
-        $i = ftell($handle);
-        fclose($handle);
-        return $i;
+        return parent::copy($handle, $length);
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getContents()
     {
-        ob_start();
-        ob_implicit_flush(false);
-        $this->onFilter(fopen('php://output', 'cb'));
-        $contents = ob_get_clean();
+        $contents = parent::getContents();
         if ($this->charset !== Parser::$charset) {
             $contents = mb_convert_encoding($contents, Parser::$charset, $this->charset);
         }
@@ -100,7 +93,7 @@ class Stream
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getBase64()
     {
@@ -110,14 +103,6 @@ class Stream
         } else {
             return base64_encode($this->getContents());
         }
-    }
-
-    /**
-     * @return resource
-     */
-    public function getHandle()
-    {
-        return $this->handle;
     }
 
 }
