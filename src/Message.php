@@ -186,7 +186,10 @@ class Message extends Mime
     protected function findTextParts($mime = 'text/html')
     {
         $parts = [];
-        if ($this->getMimeType() === $mime) {
+        if (
+            $this->getMimeType() === $mime
+            || ($this->getStream()->hasHeaders() && $this->getStream()->getMimeType() === $mime)
+        ) {
             $parts[] = $this;
         }
         if ($this->boundary === null) {
@@ -200,7 +203,10 @@ class Message extends Mime
                     $ids[] = $part->boundary;
                     continue;
                 }
-                if ($type === $mime) {
+                if (
+                    $type === $mime
+                    || ($part->getStream()->hasHeaders() && $part->getStream()->getMimeType() === $mime)
+                ) {
                     $parts[] = $part;
                 }
             }

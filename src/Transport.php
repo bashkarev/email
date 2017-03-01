@@ -12,6 +12,7 @@ namespace bashkarev\email;
  */
 abstract class Transport
 {
+    use HeadersTrait;
 
     /**
      * Transport constructor.

@@ -30,7 +30,7 @@ class Url extends Transport
      */
     public function __construct(Mime $mime)
     {
-        $this->setUrl($mime->getHeader('content-type'));
+        $this->url = $mime->findInHeader('content-type', 'url');
         if ($this->url === null) {
             throw new \Exception('Required option URL not found');
         }
@@ -53,7 +53,7 @@ class Url extends Transport
      */
     public function write($data)
     {
-        //toDo Content-type, filename etc...
+        $this->parseHeader($data);
         return $this;
     }
 
@@ -94,20 +94,6 @@ class Url extends Transport
         }
 
         curl_close($ch);
-    }
-
-    /**
-     * @param array $headers
-     */
-    protected function setUrl($headers)
-    {
-        foreach ($headers as $head) {
-            if (strncasecmp($head, 'url', 3) === 0) {
-                $url = preg_replace('/^url=/iu', '', $head);
-                $this->url = trim($url, " \"'");
-                return;
-            }
-        }
     }
 
 }

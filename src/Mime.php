@@ -16,18 +16,12 @@ use bashkarev\email\helpers\RFC5987;
  */
 class Mime
 {
+    use HeadersTrait;
+
     /**
      * @var string
      */
     public $boundary;
-    /**
-     * @var array Map of all registered headers, as original name => array of values
-     */
-    private $headers = [];
-    /**
-     * @var array Map of lowercase header name => original name at registration
-     */
-    private $headerNames = [];
     /**
      * @var Stream
      */
@@ -71,7 +65,7 @@ class Mime
     }
 
     /**
-     * @return Stream|null
+     * @return Transport|null
      * @throws \Exception
      */
     public function getStream()
@@ -93,91 +87,13 @@ class Mime
     }
 
     /**
-     * @return bool
-     */
-    public function hasHeaders()
-    {
-        return $this->headers !== [];
-    }
-
-    /**
-     * @param string $header
-     * @param string $value
-     */
-    public function setHeader($header, $value)
-    {
-        $value = $this->trimHeaderValues(explode(';', $value));
-        $normalized = strtolower($header);
-        if (isset($this->headerNames[$normalized])) {
-            $header = $this->headerNames[$normalized];
-            $this->headers[$header] = array_merge($this->headers[$header], $value);
-        } else {
-            $this->headerNames[$normalized] = $header;
-            $this->headers[$header] = $value;
-        }
-    }
-
-    /**
-     * @return array
-     */
-    public function getHeaders()
-    {
-        return $this->headers;
-    }
-
-    /**
-     * @param string $header
-     * @return bool
-     */
-    public function hasHeader($header)
-    {
-        return isset($this->headerNames[strtolower($header)]);
-    }
-
-    /**
-     * @param string $header
-     * @return array
-     */
-    public function getHeader($header)
-    {
-        $header = strtolower($header);
-        if (!isset($this->headerNames[$header])) {
-            return [];
-        }
-        $header = $this->headerNames[$header];
-        return $this->headers[$header];
-    }
-
-    /**
-     * @param string $header
-     * @param string $glue
-     * @return string
-     */
-    public function getHeaderLine($header, $glue = ', ')
-    {
-        return implode($glue, $this->getHeader($header));
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getMimeType()
-    {
-        if ($this->hasHeader('content-type')) {
-            return mb_strtolower($this->getHeader('content-type')[0]);
-        }
-        return null;
-    }
-
-    /**
      * @return null|string
      */
     public function getAccessType()
     {
-        foreach ($this->getHeader('content-type') as $value) {
-            if (strpos($value, 'access-type') !== false) {
-                return mb_strtolower(str_replace(['access-type', '"', ' ', '='], '', $value));
-            }
+        $type = $this->findInHeader('content-type', 'access-type');
+        if ($type !== null) {
+            return mb_strtolower($type);
         }
         return null;
     }
@@ -194,16 +110,22 @@ class Mime
     }
 
     /**
+     * @return null|string
+     */
+    public function getEncoding()
+    {
+        if ($this->hasHeader('content-transfer-encoding')) {
+            return mb_strtolower(trim($this->getHeader('content-transfer-encoding')[0]));
+        }
+        return null;
+    }
+
+    /**
      * @return string
      */
     public function getCharset()
     {
-        foreach ($this->getHeader('content-type') as $value) {
-            if (strpos($value, 'charset') !== false) {
-                return mb_strtoupper(str_replace(['charset', '"', ' ', '='], '', $value));
-            }
-        }
-        return 'UTF-8';
+        return mb_strtoupper($this->findInHeader('content-type', 'charset', 'UTF-8'));
     }
 
     /**
@@ -211,17 +133,14 @@ class Mime
      */
     public function getName()
     {
-        foreach ($this->getHeader('content-type') as $head) {
-            if (strncasecmp($head, 'name', 4) !== 0) {
-                continue;
-            }
-            $name = str_replace(['name', '"', ' ', '='], '', $head);
-            if ($this->getCharset() !== Parser::$charset) {
-                mb_convert_encoding($name, Parser::$charset, $this->getCharset());
-            }
-            return $name;
+        $name = $this->findInHeader('content-type', 'name');
+        if (
+            $name !== null
+            && ($charset = $this->getCharset()) !== Parser::$charset
+        ) {
+            return mb_convert_encoding($name, Parser::$charset, $charset);
         }
-        return null;
+        return $name;
     }
 
     /**
@@ -259,21 +178,5 @@ class Mime
     public function save($filename)
     {
         return (bool)$this->getStream()->copy(fopen($filename, 'wb'));
-    }
-
-    /**
-     * @param array $values
-     * @return array
-     */
-    private function trimHeaderValues($values)
-    {
-        $data = [];
-        foreach ($values as $value) {
-            $item = trim($value);
-            if ($item !== '') {
-                $data[] = $item;
-            }
-        }
-        return $data;
     }
 }

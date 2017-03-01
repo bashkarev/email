@@ -19,8 +19,16 @@ class UrlTest extends TestCase
     public function testParsing()
     {
         $this->field('/external-url.eml', function (Message $message) {
-            $this->assertInstanceOf('bashkarev\email\transports\Url', $message->getStream());
-            $this->assertContains('<!DOCTYPE html>', $message->getStream()->getContents());
+            /**
+             * @var \bashkarev\email\transports\Url $transport
+             */
+            $transport = $message->getStream();
+            $this->assertInstanceOf('bashkarev\email\transports\Url', $transport);
+            $this->assertContains('<!DOCTYPE html>', $transport->getContents());
+            $this->assertContains('<!DOCTYPE html>', $message->textHtml());
+            $this->assertTrue($transport->hasHeaders());
+            $this->assertEquals('text/html', $transport->getMimeType());
+
         });
     }
 

@@ -7,6 +7,7 @@
 
 namespace bashkarev\email\parser;
 
+use bashkarev\email\helpers\HeaderHelper;
 use bashkarev\email\Message;
 use bashkarev\email\Parser;
 use bashkarev\email\Part;
@@ -20,10 +21,6 @@ class Email
     const T_START_BOUNDARY = 0x01;
     const T_END_BOUNDARY = 0x02;
     const T_HEADER = 0x03;
-
-    use tokens\Boundary;
-    use tokens\Header;
-    use tokens\Content;
 
     /**
      * @var Message
@@ -41,6 +38,14 @@ class Email
      * @var string
      */
     protected $line;
+    /**
+     * @var array
+     */
+    protected $boundary = [];
+    /**
+     * @var bool
+     */
+    protected $allowedHeader = true;
 
     public function __construct($mime = null)
     {
@@ -110,6 +115,136 @@ class Email
     {
         $this->line = fgets($this->handle);
         return rtrim($this->line, "\n\r");
+    }
+
+    /**
+     * @param $line
+     * @return bool
+     */
+    protected function parseBoundary($line)
+    {
+        if (!isset($line[0]) || $line[0] !== '-') {
+            return false;
+        }
+        $line = rtrim($line);
+        if (!isset($this->boundary[$line])) {
+            return false;
+        }
+        $boundary = $this->boundary[$line];
+        $this->setToken($boundary[0], $boundary[1]);
+        return true;
+    }
+
+    /**
+     * @param int $type
+     * @param mixed $value
+     */
+    protected function bindBoundary($type, $value)
+    {
+        if (
+            $type === self::T_HEADER
+            && strcasecmp($value[0], 'Content-Type') === 0
+            && preg_match('/boundary(?:=|\s=)([^;]+)/i', $value[1], $out)
+        ) {
+            $id = trim(str_replace(['"', "'"], '', $out[1]));
+            $this->boundary['--' . $id] = [self::T_START_BOUNDARY, $id];
+            $this->boundary['--' . $id . '--'] = [self::T_END_BOUNDARY, $id];
+        } else if ($type === self::T_START_BOUNDARY) {
+            $this->allowedHeader = true;
+            $this->context()->boundary = $value;
+            $this->insertPart();
+            $this->part = new Part($value);
+        }
+    }
+
+    /**
+     * @param string $line
+     * @return bool
+     */
+    protected function parseContent($line)
+    {
+        if ($this->allowedHeader === true) {
+            return false;
+        }
+
+        /**
+         * @var $stream \bashkarev\email\Transport
+         */
+        $stream = $this->context()->getStream();
+        if ($line !== '') { // start EOL
+            $stream->write($this->line);
+        }
+
+        $offset = ftell($this->handle);
+        while (feof($this->handle) === false) {
+            $buff = stream_get_line($this->handle, Parser::$buffer, "\n-");
+            if (isset($buff[0]) && $buff[0] === '-') {
+                $stream->write("\n");
+                fseek($this->handle, $offset);
+                break 1;
+            }
+            $stream->write($buff);
+            $offset = ftell($this->handle) - 1;
+        }
+        return true;
+    }
+
+    /**
+     * @param string $line
+     * @return bool
+     */
+    protected function parseHeader($line)
+    {
+        if (
+            $this->allowedHeader === false
+            || strpos($line, ':') === false
+        ) {
+            return false;
+        }
+        list($field, $value) = HeaderHelper::parse($line);
+        $i = ftell($this->handle);
+        while (feof($this->handle) === false) {
+            $line = $this->nextLine();
+            if (
+                ($this->allowedHeader = ($line !== '')) === false
+                || ($line[0] !== "\t" && $line[0] !== ' ')
+            ) {
+                break 1;
+            }
+            $i = ftell($this->handle);
+            $value .= ' ' . ltrim($line);
+        }
+        fseek($this->handle, $i);
+        $value = $this->decodeMimeHeader($value);
+        $this->setToken(self::T_HEADER, [$field, $value]);
+        return true;
+    }
+
+    /**
+     * @param int $type
+     * @param mixed $value
+     */
+    protected function bindHeader($type, $value)
+    {
+        if ($type === self::T_HEADER) {
+            $this->context()->setHeader($value[0], $value[1]);
+        }
+    }
+
+    /**
+     * @param $str
+     * @return string
+     */
+    protected function decodeMimeHeader($str)
+    {
+        if (strpos($str, '=?') === false) {
+            return $str;
+        }
+        $value = mb_decode_mimeheader($str);
+        if (strpos($str, '?Q') !== false) {
+            $value = str_replace('_', ' ', $value);
+        }
+        return $value;
     }
 
     /**

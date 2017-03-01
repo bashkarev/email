@@ -30,9 +30,7 @@ class Stream extends Transport
      */
     public function __construct(Mime $mime)
     {
-        if ($mime->hasHeader('content-transfer-encoding')) {
-            $this->encoded = mb_strtolower($mime->getHeaderLine('content-transfer-encoding')); //ToDo move to method
-        }
+        $this->encoded = $mime->getEncoding();
         $this->charset = $mime->getCharset();
         $this->handle = fopen('php://temp', 'rb+');
     }
