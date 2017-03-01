@@ -27,7 +27,8 @@ class Parser
      * @var array transport class map
      */
     public static $transport = [
-        'url' => 'bashkarev\email\transports\Url'
+        'url' => 'bashkarev\email\transports\Url',
+        'local-file' => 'bashkarev\email\transports\Local',
     ];
 
     /**
