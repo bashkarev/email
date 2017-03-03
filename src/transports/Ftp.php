@@ -87,6 +87,7 @@ class Ftp extends Transport
         }
         $stream = ftp_connect($this->site);
         ftp_login($stream, $this->username, $this->password);
+        ftp_pasv($stream, true);
         ftp_fget($stream, $this->handle, $this->path, FTP_BINARY);
     }
 
