@@ -29,6 +29,8 @@ class Parser
     public static $transport = [
         'url' => 'bashkarev\email\transports\Url',
         'local-file' => 'bashkarev\email\transports\Local',
+        'anon-ftp' => 'bashkarev\email\transports\Ftp',
+        'ftp' => 'bashkarev\email\transports\Ftp'
     ];
 
     /**

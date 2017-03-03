@@ -98,3 +98,24 @@ foreach ($container->getAttachments() as $attachment) {
 }
 
 ```
+
+## message/external-body
+
+Supported types: url, local-file, ftp.
+ 
+### FTP auth
+```php
+$file = fopen('path/to/file.eml', 'rb');
+$container = \bashkarev\email\Parser::email($file);
+foreach ($container->getAttachments() as $attachment) {
+    if ($attachment->getStream() instanceof \bashkarev\email\transports\Ftp) {
+        /**
+         * @var \bashkarev\email\transports\Ftp $transport
+         */
+        $transport = $attachment->getStream();
+        $transport->username = 'username';
+        $transport->password = '******';
+        $attachment->save('dir/' . $attachment->getFileName('undefined'));
+    }
+}
+```

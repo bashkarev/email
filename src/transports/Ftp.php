@@ -11,29 +11,39 @@ use bashkarev\email\Mime;
 use bashkarev\email\Transport;
 
 /**
- * @see https://tools.ietf.org/rfc/rfc2017.txt
  * @author Dmitriy Bashkarev <dmitriy@bashkarev.com>
  */
-class Url extends Transport
+class Ftp extends Transport
 {
     /**
      * @var string
      */
-    protected $url;
+    public $username = 'anonymous';
+    /**
+     * @var string
+     */
+    public $password;
+    /**
+     * @var string
+     */
+    protected $path;
     /**
      * @var resource
      */
     protected $handle;
+    /**
+     * @var string
+     */
+    protected $site;
 
     /**
      * @inheritdoc
      */
     public function __construct(Mime $mime)
     {
-        $this->url = $mime->findInHeader('content-type', 'url');
-        if ($this->url === null) {
-            throw new \Exception('Required option URL not found');
-        }
+        $this->path = $mime->findInHeader('content-type', 'directory', '');
+        $this->path = '/' . $mime->findInHeader('content-type', 'name', '');
+        $this->site = $mime->findInHeader('content-type', 'site');
     }
 
     /**
@@ -72,28 +82,12 @@ class Url extends Transport
      */
     protected function download()
     {
-        if (!extension_loaded('curl')) {
-            throw new \Exception('extension curl not found');
+        if (!extension_loaded('ftp')) {
+            throw new \Exception('PHP extension FTP is not loaded.');
         }
-
-        $ch = curl_init($this->url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-
-        curl_setopt($ch, CURLOPT_FILE, $this->handle);
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-
-        curl_exec($ch);
-
-        // check cURL error
-        $error = curl_errno($ch);
-        $message = curl_error($ch);
-
-        if ($error > 0) {
-            throw new \Exception("Curl error: #{$error}: {$message}");
-        }
-
-        curl_close($ch);
+        $stream = ftp_connect($this->site);
+        ftp_login($stream, $this->username, $this->password);
+        ftp_fget($stream, $this->handle, $this->path, FTP_BINARY);
     }
 
 }
