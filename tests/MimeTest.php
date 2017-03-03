@@ -100,7 +100,11 @@ class MimeTest extends TestCase
             $this->assertTrue($main->hasAttachments());
             $message = $main->getAttachments()[0]->getMessage();
             $this->assertNotNull($message);
-            $this->assertStringEqualsFile(__DIR__ . '/fixtures/text/enclosed.txt', $message->textHtml());
+            $html = $message->textHtml();
+            if (PHP_EOL !== "\n") {
+                $html = str_replace("\n", PHP_EOL, $html);
+            }
+            $this->assertStringEqualsFile(__DIR__ . '/fixtures/text/enclosed.txt', $html);
         });
     }
 

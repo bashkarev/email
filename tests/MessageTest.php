@@ -40,10 +40,7 @@ class MessageTest extends TestCase
     {
         $this
             ->field('/nested.eml', function (Message $message) {
-                $this->assertEquals(
-                    '<p>Dear Sir</p><p>Good evening.</p><p></p><p>The footer</p>',
-                    str_replace(PHP_EOL, '', $message->textHtml())
-                );
+                $this->assertStringEqualsFile(__DIR__.'/fixtures/text/nested.txt',$message->textHtml());
             })
             ->field('/non-unique-cid.eml', function (Message $message) {
                 $this->assertContains(
