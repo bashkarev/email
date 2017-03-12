@@ -176,15 +176,23 @@ class Email
         }
 
         $offset = ftell($this->handle);
+        $foundSeparator = false;
         while (feof($this->handle) === false) {
+            $before = ftell($this->handle);
             $buff = stream_get_line($this->handle, Parser::$buffer, "\n-");
-            if (isset($buff[0]) && $buff[0] === '-') {
-                $stream->write("\n");
-                fseek($this->handle, $offset);
-                break 1;
+            $after = ftell($this->handle);
+            if (isset($buff[0])) {
+                if ($buff[0] === '-') {
+                    $stream->write("\n");
+                    fseek($this->handle, $offset);
+                    break 1;
+                } else if ($foundSeparator) {
+                    $stream->write("\n-");
+                }
             }
             $stream->write($buff);
-            $offset = ftell($this->handle) - 1;
+            $foundSeparator = $after - $before - strlen($buff) === 2;
+            $offset = $after - 1;
         }
         return true;
     }
