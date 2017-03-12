@@ -31,11 +31,21 @@ class BoundaryTest extends TestCase
                      ["Content-type: multipart/mixed; boundary=\"te\n     st\"", 'new line'],
                      ['Content-Type: "multipart/mixed"; boundary="te st"', '>"<'],
                      ["Content-Type: 'multipart/mixed'; boundary='te st'", ">'<"],
+                     ['Content-Type: "multipart/mixed"; boundary = "te st"', "with spaces"],
+                     ["Content-Type: \"multipart/mixed\"; boundary\t=\t\"te st\"", "with tab"],
                  ] as $eml) {
             $parser = new Email();
             $parser->parse($eml[0]);
             $this->assertEquals($expected, $this->getProperty('bashkarev\email\parser\Email', 'boundary')->getValue($parser), $eml[1]);
         }
+
+        $parser = new Email();
+        $parser->parse('Content-Type: multipart/alternative; boundary="=felis-alternative=20170125210403=141032"');
+        $this->assertEquals([
+            '--=felis-alternative=20170125210403=141032' => [Email::T_START_BOUNDARY, '=felis-alternative=20170125210403=141032'],
+            '--=felis-alternative=20170125210403=141032--' => [Email::T_END_BOUNDARY, '=felis-alternative=20170125210403=141032'],
+        ], $this->getProperty('bashkarev\email\parser\Email', 'boundary')->getValue($parser));
+
     }
 
     public function testMultipartAlternative()

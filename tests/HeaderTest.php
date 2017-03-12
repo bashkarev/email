@@ -53,9 +53,9 @@ class HeaderTest extends TestCase
                      ['CONTENT-TYPE', 'TEXT/PLAIN;CHARSET="UTF-8"', 'UTF-8', 'uppercase'],
                      ['Content-Type', 'text/plain;charset=utf-8', 'utf-8', 'without quotes'],
                      ['Content-Type', "text/plain;charset='utf-8'", 'utf-8', 'quotes'],
-                     ['Content-Type', 'text/plain;charset= utf-8 ', 'utf-8', 'with spaces'],
-                     ['Content-Type', 'text/plain;charset=  utf-8  ', 'utf-8', 'with spaces 2'],
-                     ['Content-Type', "text/plain;charset=\tutf-8\t", 'utf-8', 'with tab'],
+                     ['Content-Type', 'text/plain;charset = utf-8 ', 'utf-8', 'with spaces'],
+                     ['Content-Type', 'text/plain;charset  =  utf-8  ', 'utf-8', 'with spaces 2'],
+                     ['Content-Type', "text/plain;charset\t=\tutf-8\t", 'utf-8', 'with tab'],
                  ] as $item) {
             list($header, $value, $expected, $message) = $item;
             $mime = new Mime();

@@ -19,10 +19,6 @@ class Mime
     use HeadersTrait;
 
     /**
-     * @var string
-     */
-    public $boundary;
-    /**
      * @var Stream
      */
     private $stream;
@@ -101,12 +97,20 @@ class Mime
     /**
      * @return null|string
      */
-    public function getContentID()
+    public function getID()
     {
         if ($this->hasHeader('content-id')) {
-            return trim(str_replace(['<', '>'], '', $this->getHeader('content-id')[0]));
+            return trim($this->getHeader('content-id')[0], " <>\t\n\r\0\x0B");
         }
         return null;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getBoundary()
+    {
+        return $this->findInHeader('content-type', 'boundary');
     }
 
     /**

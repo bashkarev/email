@@ -192,15 +192,16 @@ class Message extends Mime
         ) {
             $parts[] = $this;
         }
-        if ($this->boundary === null) {
+        if (($boundary = $this->getBoundary()) === null) {
             return $parts;
         }
-        $ids = [$this->boundary];
-
+        $boundaries = [$boundary];
         foreach ($this->parts as $part) {
-            if (in_array($part->getId(), $ids) && ($type = $part->getMimeType()) !== null) {
+            if (in_array($part->getParentBoundary(), $boundaries) && ($type = $part->getMimeType()) !== null) {
                 if ($type === 'multipart/alternative' || $type === 'multipart/related') {
-                    $ids[] = $part->boundary;
+                    if (($boundary = $part->getBoundary()) !== null) {
+                        $boundaries[] = $boundary;
+                    }
                     continue;
                 }
                 if (
@@ -225,7 +226,7 @@ class Message extends Mime
              * @var Part $attachment
              */
             if (
-                ($id = $attachment->getContentID()) !== null
+                ($id = $attachment->getID()) !== null
                 && ($mime = $attachment->getMimeType()) !== null
                 && strncasecmp($mime, 'image/', 6) === 0
                 && strpos($html, "cid:{$id}") !== false

@@ -12,16 +12,26 @@ namespace bashkarev\email;
  */
 class Part extends Mime
 {
-    protected $id;
+    /**
+     * @var string
+     */
+    private $_parentBoundary;
 
-    public function __construct($id)
+    /**
+     * Part constructor.
+     * @param string $parentBoundary
+     */
+    public function __construct($parentBoundary)
     {
-        $this->id = $id;
+        $this->_parentBoundary = $parentBoundary;
     }
 
-    public function getId()
+    /**
+     * @return null|string
+     */
+    public function getParentBoundary()
     {
-        return $this->id;
+        return $this->_parentBoundary;
     }
 
 }

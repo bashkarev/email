@@ -108,4 +108,26 @@ class MimeTest extends TestCase
         });
     }
 
+    public function testBoundary()
+    {
+        $mime = new Mime();
+        $mime->setHeader('Content-Type', 'multipart/alternative; boundary="=felis-alternative=20170125210403=141032"');
+        $this->assertEquals('=felis-alternative=20170125210403=141032', $mime->getBoundary(), '');
+    }
+
+    public function testId()
+    {
+        foreach ([
+                     ['<id>', 'id', 'simple'],
+                     ['< id >', 'id', 'space'],
+                     [' < id > ', 'id', 'space'],
+                     ["\t<id>\t", 'id', 'tab'],
+                 ] as $data) {
+            list($value, $expected, $message) = $data;
+            $mime = new Mime();
+            $mime->setHeader('Content-Id', $value);
+            $this->assertEquals($expected, $mime->getID(), $message);
+        }
+    }
+
 }

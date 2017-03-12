@@ -93,7 +93,7 @@ trait HeadersTrait
         $len = strlen($type);
         foreach ($this->getHeader($header) as $head) {
             if (strncasecmp($head, $type, $len) === 0) {
-                return trim(substr($head, $len), "= \t\"'");
+                return trim(ltrim(substr($head, $len), " \t="), " \t\"'");
             }
         }
         return $default;

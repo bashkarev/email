@@ -146,12 +146,11 @@ class Email
             && strcasecmp($value[0], 'Content-Type') === 0
             && preg_match('/boundary(?:=|\s=)([^;]+)/i', $value[1], $out)
         ) {
-            $id = trim(str_replace(['"', "'"], '', $out[1]));
+            $id = trim($out[1], " \t\"'");
             $this->boundary['--' . $id] = [self::T_START_BOUNDARY, $id];
             $this->boundary['--' . $id . '--'] = [self::T_END_BOUNDARY, $id];
         } else if ($type === self::T_START_BOUNDARY) {
             $this->allowedHeader = true;
-            $this->context()->boundary = $value;
             $this->insertPart();
             $this->part = new Part($value);
         }
