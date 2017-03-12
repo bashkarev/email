@@ -58,6 +58,34 @@ EOF;
             $this->assertEquals("http://test-local.ru", $message->textPlain());
         });
 
+        $eml = <<<EOF
+Content-Type: multipart/mixed;boundary=test
+
+--test
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+test
+-
+EOF;
+        $this->field($eml, function (Message $message) {
+            $this->assertContains("-", $message->textPlain());
+        });
+
+        $eml = <<<EOF
+Content-Type: multipart/mixed;boundary=test
+
+--test
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+-
+test
+EOF;
+        $this->field($eml, function (Message $message) {
+            $this->assertContains("-", $message->textPlain());
+        });
+
     }
 
 }

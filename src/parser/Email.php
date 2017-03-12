@@ -181,14 +181,13 @@ class Email
             $before = ftell($this->handle);
             $buff = stream_get_line($this->handle, Parser::$buffer, "\n-");
             $after = ftell($this->handle);
-            if (isset($buff[0])) {
-                if ($buff[0] === '-') {
-                    $stream->write("\n");
-                    fseek($this->handle, $offset);
-                    break 1;
-                } else if ($foundSeparator) {
-                    $stream->write("\n-");
-                }
+            if (isset($buff[0]) && $buff[0] === '-') {
+                $stream->write("\n");
+                fseek($this->handle, $offset);
+                break 1;
+            }
+            if ($foundSeparator) {
+                $stream->write("\n-");
             }
             $stream->write($buff);
             $foundSeparator = $after - $before - strlen($buff) === 2;
