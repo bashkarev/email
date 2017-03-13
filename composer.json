@@ -1,6 +1,7 @@
 {
   "name": "bashkarev/email",
-  "description": "mime mail parser, email viewer",
+  "description": "Faster MIME Mail Parser could be used to parse emails in MIME format.",
+  "keywords": ["mime", "mail", "mailparse", "email", "mime-parser", "FBL", "ARF"],
   "license": "MIT",
   "authors": [
     {
